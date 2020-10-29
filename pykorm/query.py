@@ -180,12 +180,14 @@ class BaseQuery(Node):
 
     def _apply(self, obj: 'PykormModel'):
         k8s_dict = obj._k8s_dict
+        kwargs = self.process_method_kwargs(obj, body=k8s_dict)
 
         try:
-            self.create_method(**self.process_method_kwargs(obj, body=k8s_dict))
+            self.create_method(**kwargs)
         except ApiException as e:
-            if e.status == 404:
-                self.patch_method(**self.process_method_kwargs(obj, body=k8s_dict))
+            if e.status == 409:
+                kwargs['name'] = obj.name
+                self.patch_method(**kwargs)
 
     @staticmethod
     def process_http_response(http_response):

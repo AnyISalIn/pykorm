@@ -40,6 +40,16 @@ def k8s_core(kind: str):
     return wrap
 
 
+def k8s_authorization_v1(kind: str):
+    def wrap(cls):
+        query_class = get_query_cls(cls)
+        return _process_cls(cls, query_class, group='rbac.authorization.k8s.io', version='v1', plural=None,
+                            api=kubernetes.client.RbacAuthorizationV1Api,
+                            kind=kind)
+
+    return wrap
+
+
 def k8s_appsv1(kind: str):
     def wrap(cls):
         query_class = get_query_cls(cls)
