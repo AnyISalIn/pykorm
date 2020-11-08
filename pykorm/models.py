@@ -46,8 +46,22 @@ class PykormModel(ModelMixin):
 
     def _matches_attributes(self, filters_dict: Dict[str, str]) -> bool:
         for attribute_name, attribute_value in filters_dict.items():
-            if getattr(self, attribute_name) != attribute_value:
-                return False
+            bits = attribute_name.split("__")
+            assert len(bits) <= 2, "too many __ in selector"
+            if len(bits) == 1:
+                k = bits[0]
+                op = "eq"
+            else:
+                k = bits[0]
+                op = bits[1]
+            if op == "eq":
+                if getattr(self, k) != attribute_value:
+                    return False
+            elif op == "in":
+                if getattr(self, k) not in attribute_value:
+                    return False
+            else:
+                raise ValueError("{} is not a valid comparison operator".format(op))
         return True
 
     def __eq__(self, other):
