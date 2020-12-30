@@ -24,6 +24,9 @@ class Node(object):
     def clone(self):
         obj = self.__class__.__new__(self.__class__)
         obj.__dict__ = self.__dict__.copy()
+        obj._next_filter = obj._next_filter.copy()
+        obj._label_filters = obj._label_filters.copy()
+        obj._field_filters = obj._field_filters.copy()
         return obj
 
     @staticmethod
