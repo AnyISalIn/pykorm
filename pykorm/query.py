@@ -299,9 +299,9 @@ class ClusterObjectQuery(BaseQuery):
     def _get(self, name):
         try:
             result = self.get_method(**self.process_method_kwargs(self.baseobject, name=name))
+            if result:
+                obj = self.process_http_response(result)
+                return self.baseobject._instantiate_with_dict(obj, queryset=self)
         except ApiException as e:
             if e.status == 404:
                 return
-        if result:
-            obj = self.process_http_response(result)
-            return self.baseobject._instantiate_with_dict(obj, queryset=self)
